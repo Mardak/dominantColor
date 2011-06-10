@@ -71,16 +71,16 @@ function addFindDominant(window) {
     // Process each pixel 4 bytes at a time
     for (let i = 0; i < data.length; i += 4) {
       // Ignore transparent pixels
-      let [red, blue, green, alpha] = data.slice(i, i + 4);
+      let [red, green, blue, alpha] = data.slice(i, i + 4);
       if (alpha <= 40)
         continue;
 
       // Ignore black-ish and white-ish
-      if (Math.max(red, blue, green) <= 40 || Math.min(red, blue, green) >= 216)
+      if (Math.max(red, green, blue) <= 40 || Math.min(red, green, blue) >= 216)
         continue;
 
       // Increment or initialize the counter
-      let color = red + "," + blue + "," + green;
+      let color = red + "," + green + "," + blue;
       colorCount[color] = (colorCount[color] || 0) + 1;
 
       // Keep track of the color that appears the most times
