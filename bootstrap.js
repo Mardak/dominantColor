@@ -42,6 +42,41 @@ const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 Cu.import("resource://gre/modules/AddonManager.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
+// Take pixel data for an image and find the dominant color
+function processPixels(pixels) {
+  // Keep track of how many times a color appears in the image
+  let colorCount = {};
+  let dominantColor = "";
+  let maxCount = 0;
+
+  // Process each pixel one by one
+  pixels.forEach(function(data) {
+    // Round the color values to the closest multiple of 8
+    let [red, green, blue, alpha] = data.map(function(v) Math.round(v / 8) * 8);
+
+    // Ignore transparent pixels
+    if (alpha <= 40)
+      return;
+
+    // Ignore black-ish and white-ish
+    if (Math.max(red, green, blue) <= 40 || Math.min(red, green, blue) >= 216)
+      return;
+
+    // Increment or initialize the counter
+    let color = red + "," + green + "," + blue;
+    colorCount[color] = (colorCount[color] || 0) + 1;
+
+    // Keep track of the color that appears the most times
+    if (colorCount[color] > maxCount) {
+      maxCount = colorCount[color];
+      dominantColor = color;
+    }
+  });
+
+  // Break the color into rgb pieces
+  return dominantColor.split(",");
+}
+
 // Add the functionality to detect images and compute the color
 function addFindDominant(window) {
   let {async, createNode} = makeWindowHelpers(window);
@@ -57,41 +92,15 @@ function addFindDominant(window) {
     let context = canvas.getContext("2d");
     context.drawImage(image, 0, 0);
 
-    // Keep track of how many times a color appears in the image
-    let colorCount = {};
-    let dominantColor = "";
-    let maxCount = 0;
-
     // Get the rgba pixel values as 4 one-byte values
-    let data = context.getImageData(0, 0, height, width).data;
+    let {data} = context.getImageData(0, 0, height, width);
 
-    // Round the values to the closest multiple of 8
-    data = Array.map(data, function(val) Math.round(val / 8) * 8);
+    // Group each set of 4 bytes into pixels
+    let pixels = [];
+    for (let i = 0; i < data.length; i += 4)
+      pixels.push(Array.slice(data, i, i + 4));
 
-    // Process each pixel 4 bytes at a time
-    for (let i = 0; i < data.length; i += 4) {
-      // Ignore transparent pixels
-      let [red, green, blue, alpha] = data.slice(i, i + 4);
-      if (alpha <= 40)
-        continue;
-
-      // Ignore black-ish and white-ish
-      if (Math.max(red, green, blue) <= 40 || Math.min(red, green, blue) >= 216)
-        continue;
-
-      // Increment or initialize the counter
-      let color = red + "," + green + "," + blue;
-      colorCount[color] = (colorCount[color] || 0) + 1;
-
-      // Keep track of the color that appears the most times
-      if (colorCount[color] > maxCount) {
-        maxCount = colorCount[color];
-        dominantColor = color;
-      }
-    }
-
-    // Break the color into rgb pieces
-    return dominantColor.split(",");
+    return processPixels(pixels);
   }
 
   // Create a panel to show the image and dominant color
