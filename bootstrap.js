@@ -72,7 +72,7 @@ function addFindDominant(window) {
     for (let i = 0; i < data.length; i += 4) {
       // Ignore transparent pixels
       let [red, blue, green, alpha] = data.slice(i, i + 4);
-      if (alpha == 0)
+      if (alpha <= 40)
         continue;
 
       // Ignore black-ish and white-ish
