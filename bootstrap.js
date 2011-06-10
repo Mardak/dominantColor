@@ -75,12 +75,12 @@ function addFindDominant(window) {
       if (alpha == 0)
         continue;
 
-      // Ignore black and white
-      let color = red + "," + blue + "," + green;
-      if (color == "0,0,0" || color == "240,240,240")
+      // Ignore black-ish and white-ish
+      if (Math.max(red, blue, green) <= 40 || Math.min(red, blue, green) >= 216)
         continue;
 
       // Increment or initialize the counter
+      let color = red + "," + blue + "," + green;
       colorCount[color] = (colorCount[color] || 0) + 1;
 
       // Keep track of the color that appears the most times
