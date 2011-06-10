@@ -121,6 +121,7 @@ function addFindDominant(window) {
   // Watch for the panel going away to clean up
   panel.addEventListener("popuphiding", function() {
     box.style.backgroundImage = "";
+    box.style.boxShadow = "";
     display.removeAttribute("src");
   }, false);
 
@@ -134,6 +135,9 @@ function addFindDominant(window) {
     // Set a radial gradient that makes use of the dominant color
     let gradient = ["top left", "farthest-corner", rgb(.3), rgb(.5)];
     box.style.backgroundImage = "-moz-radial-gradient(" + gradient + ")";
+
+    // Add a border with the dominant color
+    box.style.boxShadow = "0 0 20px " + rgb(1) + " inset";
   }), false);
 
   // Use whatever image that the user points at
