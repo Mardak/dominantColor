@@ -65,8 +65,8 @@ function addFindDominant(window) {
     // Get the rgba pixel values as 4 one-byte values
     let data = context.getImageData(0, 0, height, width).data;
 
-    // Drop off the lower bits of the data
-    data = Array.map(data, function(val) val & 0xf0);
+    // Round the values to the closest multiple of 8
+    data = Array.map(data, function(val) Math.round(val / 8) * 8);
 
     // Process each pixel 4 bytes at a time
     for (let i = 0; i < data.length; i += 4) {
