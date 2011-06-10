@@ -113,6 +113,11 @@ function addFindDominant(window) {
   box.appendChild(display);
   display.style.display = "block";
 
+  // Hide the panel on click
+  panel.addEventListener("mousedown", function() {
+    panel.hidePopup();
+  }, false);
+
   // Watch for the panel going away to clean up
   panel.addEventListener("popuphiding", function() {
     box.style.backgroundColor = "";
