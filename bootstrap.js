@@ -120,15 +120,20 @@ function addFindDominant(window) {
 
   // Watch for the panel going away to clean up
   panel.addEventListener("popuphiding", function() {
-    box.style.backgroundColor = "";
+    box.style.backgroundImage = "";
     display.removeAttribute("src");
   }, false);
 
   // Watch for the panel to appear and wait briefly before coloring
   panel.addEventListener("popupshowing", function() async(function() {
     let color = getDominantColor(display);
+    function rgb(a) "rgba(" + color + "," + a +")";
+
     label.setAttribute("value", color);
-    box.style.backgroundColor = "rgb(" + color + ")";
+
+    // Set a radial gradient that makes use of the dominant color
+    let gradient = ["top left", "farthest-corner", rgb(.3), rgb(.5)];
+    box.style.backgroundImage = "-moz-radial-gradient(" + gradient + ")";
   }), false);
 
   // Use whatever image that the user points at
