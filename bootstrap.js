@@ -122,20 +122,8 @@ function addFindDominant(window) {
   box.appendChild(display);
   display.style.display = "block";
 
-  // Hide the panel on click
-  panel.addEventListener("mousedown", function() {
-    panel.hidePopup();
-  }, false);
-
-  // Watch for the panel going away to clean up
-  panel.addEventListener("popuphiding", function() {
-    box.style.backgroundImage = "";
-    box.style.boxShadow = "";
-    display.removeAttribute("src");
-  }, false);
-
   // Watch for the panel to appear and wait briefly before coloring
-  panel.addEventListener("popupshowing", function() async(function() {
+  display.addEventListener("load", function() {
     let color = getDominantColor(display);
     function rgb(a) "rgba(" + color + "," + a +")";
 
@@ -147,7 +135,12 @@ function addFindDominant(window) {
 
     // Add a border with the dominant color
     box.style.boxShadow = "0 0 20px " + rgb(1) + " inset";
-  }), false);
+  }, false);
+
+  // Hide the panel on click
+  panel.addEventListener("mousedown", function() {
+    panel.hidePopup();
+  }, false);
 
   // Use whatever image that the user points at
   listen(window, window, "mousemove", function({originalTarget, shiftKey}) {
